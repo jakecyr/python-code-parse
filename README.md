@@ -2,6 +2,51 @@
 
 Parse Python code to extract information about functions, classes, methods, etc.
 
+## Install with pip
+
+```bash
+pip install python_code_parse
+```
+
+## Usage
+
+Below is the output of running the parser on the example `examples/basic_example.py`:
+
+```python
+from python_code_parse import get_all_function_info_from_code, FunctionInfo
+from typing import List
+
+with open("examples/basic_example.py", "r") as f:
+    data = f.read()
+
+function_infos: List[FunctionInfo] = get_all_function_info_from_code(data)
+
+print(function_infos)
+
+"""
+[
+  FunctionInfo(
+    name='sum',
+    args=[
+      FunctionArg(name='a', annotation='int'),
+      FunctionArg(name='b', annotation='')
+      ],
+      return_type='None',
+      line=1
+    ),
+    FunctionInfo(
+      name='subtract',
+      args=[
+        FunctionArg(name='a', annotation=''),
+        FunctionArg(name='b', annotation='')
+      ],
+      return_type='int',
+      line=4
+    )
+]
+"""
+```
+
 ## Setup for Development
 
 ```bash
