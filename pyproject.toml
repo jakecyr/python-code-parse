@@ -26,3 +26,5 @@ dev = [
   "wheel",
 ]
 
+[tool.distutils.bdist_wheel]
+universal = true

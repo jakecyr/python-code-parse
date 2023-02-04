@@ -2,12 +2,21 @@
 
 Parse Python code to extract information about functions, classes, methods, etc.
 
+## Setup for Development
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -e .
+pip install -e .[dev]
+```
+
 ## Upload to PyPi
 
 First you have to build the wheel file:
 
 ```bash
-python setup.py bdist_wheel
+python3 -m pip wheel .
 ```
 
 Then the wheel file can be uploaded to PyPi with:
