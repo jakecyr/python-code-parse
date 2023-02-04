@@ -22,5 +22,5 @@ python3 -m pip wheel .
 Then the wheel file can be uploaded to PyPi with:
 
 ```bash
-twine upload --skip-existing dist/*
+twine upload --skip-existing python_code_parse-*.whl
 ```
