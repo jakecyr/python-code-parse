@@ -1,4 +1,4 @@
-from python_code_parse.get_all_function_info_from_code import get_all_function_info_from_code
+from python_code_parse import get_all_function_info_from_code
 
 
 def test_get_all_function_info_from_code_returns_array():
