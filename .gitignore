@@ -1,0 +1,8 @@
+*.egg-info
+.vscode
+env
+**/**/__pycache__
+.coverage
+.pytest_cache
+build
+dist

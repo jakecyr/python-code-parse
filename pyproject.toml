@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python_code_parse"
+authors = [
+    {name = "Jake Cyr", email = "cyrjake@gmail.com"},
+]
+version = "0.0.1"
+description = "Parse code to get information about functions, etc."
+readme = "README.md"
+requires-python = ">=3.7"
+keywords = ["code", "parse", "python", "ast", "abstract syntax tree"]
+license = {text = "MIT"}
+classifiers = [
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "twine",
+  "wheel",
+]
+
