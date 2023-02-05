@@ -1,7 +1,11 @@
 import ast
 from typing import List
+
 from python_code_parse.models.function_arg import FunctionArg
 from python_code_parse.models.function_info import FunctionInfo
+from python_code_parse.replace_function_signature import (
+    get_signature_end_index,
+)
 
 
 def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
@@ -19,7 +23,8 @@ def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
                     arg_str += ": " + ast.unparse(arg.annotation).strip()
                     args.append(
                         FunctionArg(
-                            name=arg.arg, annotation=ast.unparse(arg.annotation).strip()
+                            name=arg.arg,
+                            annotation=ast.unparse(arg.annotation).strip(),
                         )
                     )
                 else:
@@ -33,6 +38,7 @@ def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
                     if node.returns
                     else "",
                     line=node.lineno,
+                    signature_end_line_index=get_signature_end_index(node),
                 )
             )
     return functions

@@ -1,11 +1,15 @@
 from python_code_parse import get_all_function_info_from_code
 
 
-def test_get_all_function_info_from_code_returns_array():
+def test_returns_array():
     assert isinstance(get_all_function_info_from_code(""), list)
-    assert isinstance(get_all_function_info_from_code("def test(): pass"), list)
     assert isinstance(
-        get_all_function_info_from_code("def test(a: int, b: float) -> float: pass"),
+        get_all_function_info_from_code("def test(): pass"), list
+    )
+    assert isinstance(
+        get_all_function_info_from_code(
+            "def test(a: int, b: float) -> float: pass"
+        ),
         list,
     )
 
@@ -17,7 +21,7 @@ def test_get_all_function_info_from_code_returns_array():
     )
 
 
-def test_get_all_function_info_from_code_returns_expected_info_with_one_function():
+def test_returns_expected_info_with_one_function():
     multi_long_function = """def test(a: int, b: float) -> float:\n\tpass"""
     result = get_all_function_info_from_code(multi_long_function)
     assert isinstance(
@@ -36,9 +40,11 @@ def test_get_all_function_info_from_code_returns_expected_info_with_one_function
     assert result[0].args[1].annotation == "float"
 
 
-def test_get_all_function_info_from_code_returns_expected_info_with_two_functions():
+def test_returns_expected_info_with_two_functions():
     multi_long_function = """def test(a: int, b: float) -> float:\n\tpass"""
-    multi_long_function += """\n\ndef test2(a: int, b: float) -> float:\n\tpass"""
+    multi_long_function += (
+        """\n\ndef test2(a: int, b: float) -> float:\n\tpass"""
+    )
 
     result = get_all_function_info_from_code(multi_long_function)
     assert isinstance(

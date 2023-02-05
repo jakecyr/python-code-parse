@@ -1,0 +1,4 @@
+[flake8]
+extend-ignore = F401
+exclude = .git,__pycache__,build,dist,.pytest_cache,.mypy_cache,.vscode,env
+max-complexity = 10

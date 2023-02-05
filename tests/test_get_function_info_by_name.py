@@ -1,9 +1,11 @@
+import pytest
+
 from python_code_parse import (
-    get_function_info_by_name,
     FunctionInfo,
     FunctionNotFoundException,
+    get_function_info_by_name,
+    get_function_line_number,
 )
-import pytest
 
 
 def test_get_function_info_by_name_returns_function_info():
@@ -37,7 +39,9 @@ def test_get_function_info_by_name_returns_expected_info_with_one_function():
 
 def test_get_function_info_by_name_returns_expected_info_with_two_functions():
     multi_long_function = """def test(a: int, b: float) -> float:\n\tpass"""
-    multi_long_function += """\n\ndef test2(a: int, b: float) -> float:\n\tpass"""
+    multi_long_function += (
+        """\n\ndef test2(a: int, b: float) -> float:\n\tpass"""
+    )
 
     result = get_function_info_by_name(multi_long_function, "test")
     assert isinstance(
@@ -53,3 +57,13 @@ def test_get_function_info_by_name_returns_expected_info_with_two_functions():
     assert result.args[0].annotation == "int"
     assert result.args[1].name == "b"
     assert result.args[1].annotation == "float"
+
+
+def test_get_function_line_number_returns_the_correct_value():
+    multi_long_function = """def test(a: int, b: float) -> float:\n\tpass"""
+    multi_long_function += (
+        """\n\ndef test2(a: int, b: float) -> float:\n\tpass"""
+    )
+
+    assert get_function_line_number(multi_long_function, "test") == 1
+    assert get_function_line_number(multi_long_function, "test2") == 4
