@@ -76,12 +76,14 @@ def test_returns_expected_info_with_two_functions():
 
 def test_returns_expected_info_with_default_value():
     multi_long_function = (
-        """def test(a: int = 1, b: float = '1') -> float:\n\tpass"""
+        """def test(a: int = 1, b: float = '1') -> float:\n\tpass\n\ndef sum(a = 1, b = 2):\n\treturn a + b"""
     )
     result: list[FunctionInfo] = get_all_function_info_from_code(
         multi_long_function
     )
 
-    assert len(result) == 1
+    assert len(result) == 2
     assert result[0].args[0].default == "1"
     assert result[0].args[1].default == "'1'"
+    assert result[1].args[0].default == "1"
+    assert result[1].args[1].default == "2"

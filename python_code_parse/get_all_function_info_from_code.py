@@ -32,11 +32,20 @@ def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
                         FunctionArg(
                             name=arg.arg,
                             annotation=ast.unparse(arg.annotation).strip(),
-                            default=arg_default
+                            default=arg_default,
                         )
                     )
                 else:
-                    args.append(FunctionArg(name=arg.arg, annotation=""))
+                    arg_default = None
+
+                    if len(defaults) > i:
+                        arg_default = ast.unparse(defaults[i]).strip()
+
+                    args.append(
+                        FunctionArg(
+                            name=arg.arg, annotation="", default=arg_default
+                        )
+                    )
 
             functions.append(
                 FunctionInfo(
