@@ -71,6 +71,46 @@ def test_replaces_the_correct_line():
     assert lines[4] == "\tpass"
 
 
+def test_replaces_with_default_args():
+    multi_long_function = (
+        """def test(a: int = 1, b: float = 2) -> float:\n\tpass"""
+    )
+    multi_long_function += """\n\ndef test2(a = 1, b = 2) -> float:\n\tpass"""
+    multi_long_function += """\n\ndef test3(a, b) -> float:\n\tpass"""
+
+    result = replace_function_signature(
+        multi_long_function,
+        FunctionInfo(
+            "test2",
+            [FunctionArg("a", None, 1)],
+            "float",
+            line=None,
+            signature_end_line_index=None,
+        ),
+    )
+
+    result = replace_function_signature(
+        result,
+        FunctionInfo(
+            "test3",
+            [FunctionArg("a", "Any", 1), FunctionArg("b", "Any", 2)],
+            "float",
+            line=None,
+            signature_end_line_index=None,
+        ),
+    )
+
+    lines = result.splitlines()
+
+    assert lines[0] == "def test(a: int = 1, b: float = 2) -> float:"
+    assert lines[1] == "\tpass"
+    assert lines[2] == ""
+    assert lines[3] == "def test2(a = 1) -> float:"
+    assert lines[4] == "\tpass"
+    assert lines[6] == 'def test3(a: Any = 1, b: Any = 2) -> float:'
+    assert lines[7] == '\tpass'
+
+
 def test_replaces_the_correct_line_with_indentation():
     multi_long_function = "class Person:\n"
     multi_long_function += "  def __init__(self, name: str, age: int):\n"

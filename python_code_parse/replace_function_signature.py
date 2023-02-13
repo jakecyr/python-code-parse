@@ -23,10 +23,15 @@ def replace_function_signature(code: str, function_info: FunctionInfo) -> str:
             new_signature = f"{spaces}def {function_info.name}("
 
             for arg in function_info.args:
+                default_string = (
+                    f" = {arg.default}" if arg.default is not None else ""
+                )
                 if arg.annotation != "" and arg.annotation is not None:
-                    new_signature += f"{arg.name}: {arg.annotation}, "
+                    new_signature += (
+                        f"{arg.name}: {arg.annotation}{default_string}, "
+                    )
                 else:
-                    new_signature += f"{arg.name}, "
+                    new_signature += f"{arg.name}{default_string}, "
 
             if len(function_info.args) > 0:
                 new_signature = new_signature[:-2]
