@@ -80,7 +80,7 @@ def test_replaces_the_correct_line_with_indentation():
         multi_long_function,
         FunctionInfo(
             "__init__",
-            [FunctionArg("self", "Any")],
+            [FunctionArg("self")],
             "None",
             line=None,
             signature_end_line_index=None,
@@ -90,7 +90,7 @@ def test_replaces_the_correct_line_with_indentation():
     lines = result.splitlines()
 
     assert lines[0] == "class Person:"
-    assert lines[1] == "  def __init__(self: Any) -> None:"
+    assert lines[1] == "  def __init__(self) -> None:"
 
 
 def test_replaces_multi_line_signature():

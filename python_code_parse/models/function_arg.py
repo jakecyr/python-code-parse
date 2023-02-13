@@ -6,4 +6,4 @@ class FunctionArg:
     """A dataclass to hold information about a function argument."""
 
     name: str
-    annotation: str
+    annotation: str = None
