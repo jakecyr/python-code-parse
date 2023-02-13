@@ -17,14 +17,22 @@ def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
             args: List[FunctionArg] = []
-            for arg in node.args.args:
+            defaults = node.args.defaults
+
+            for i, arg in enumerate(node.args.args):
                 arg_str = arg.arg
                 if arg.annotation:
                     arg_str += ": " + ast.unparse(arg.annotation).strip()
+                    arg_default = None
+
+                    if len(defaults) > i:
+                        arg_default = ast.unparse(defaults[i]).strip()
+
                     args.append(
                         FunctionArg(
                             name=arg.arg,
                             annotation=ast.unparse(arg.annotation).strip(),
+                            default=arg_default
                         )
                     )
                 else:

@@ -7,3 +7,4 @@ class FunctionArg:
 
     name: str
     annotation: str = None
+    default: str = None

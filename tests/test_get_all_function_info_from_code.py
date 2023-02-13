@@ -1,4 +1,5 @@
 from python_code_parse import get_all_function_info_from_code
+from python_code_parse.models.function_info import FunctionInfo
 
 
 def test_returns_array():
@@ -71,3 +72,16 @@ def test_returns_expected_info_with_two_functions():
     assert result[1].args[0].annotation == "int"
     assert result[1].args[1].name == "b"
     assert result[1].args[1].annotation == "float"
+
+
+def test_returns_expected_info_with_default_value():
+    multi_long_function = (
+        """def test(a: int = 1, b: float = '1') -> float:\n\tpass"""
+    )
+    result: list[FunctionInfo] = get_all_function_info_from_code(
+        multi_long_function
+    )
+
+    assert len(result) == 1
+    assert result[0].args[0].default == "1"
+    assert result[0].args[1].default == "'1'"
