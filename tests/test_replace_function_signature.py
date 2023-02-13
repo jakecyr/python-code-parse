@@ -107,8 +107,27 @@ def test_replaces_with_default_args():
     assert lines[2] == ""
     assert lines[3] == "def test2(a = 1) -> float:"
     assert lines[4] == "\tpass"
-    assert lines[6] == 'def test3(a: Any = 1, b: Any = 2) -> float:'
-    assert lines[7] == '\tpass'
+    assert lines[6] == "def test3(a: Any = 1, b: Any = 2) -> float:"
+    assert lines[7] == "\tpass"
+
+
+def test_replaces_with_default_args_after_first_argument():
+    multi_long_function = """def test(a, b: float = 2) -> float:\n\tpass"""
+
+    result = replace_function_signature(
+        multi_long_function,
+        FunctionInfo(
+            "test",
+            [FunctionArg("a", None, None), FunctionArg("b", "float", 2)],
+            "float",
+            line=None,
+            signature_end_line_index=None,
+        ),
+    )
+    lines = result.splitlines()
+
+    assert lines[0] == "def test(a, b: float = 2) -> float:"
+    assert lines[1] == "\tpass"
 
 
 def test_replaces_the_correct_line_with_indentation():

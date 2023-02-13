@@ -19,13 +19,17 @@ def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
             args: List[FunctionArg] = []
             defaults = node.args.defaults
 
+            while len(defaults) < len(node.args.args):
+                defaults.insert(0, None)
+
             for i, arg in enumerate(node.args.args):
                 arg_str = arg.arg
+
                 if arg.annotation:
                     arg_str += ": " + ast.unparse(arg.annotation).strip()
                     arg_default = None
 
-                    if len(defaults) > i:
+                    if defaults[i] is not None:
                         arg_default = ast.unparse(defaults[i]).strip()
 
                     args.append(
@@ -38,7 +42,7 @@ def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
                 else:
                     arg_default = None
 
-                    if len(defaults) > i:
+                    if defaults[i] is not None:
                         arg_default = ast.unparse(defaults[i]).strip()
 
                     args.append(
