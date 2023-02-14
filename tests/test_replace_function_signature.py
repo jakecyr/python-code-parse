@@ -230,10 +230,7 @@ def test_replace_signatures_with_two_same_named_functions_first_function():
     assert lines[8] == "        self.breed = breed"
     assert lines[9] == ""
     assert lines[10] == "class Cat:"
-    assert (
-        lines[11]
-        == "    def __init__(self, name, breed, favorite_toy):"
-    )
+    assert lines[11] == "    def __init__(self, name, breed, favorite_toy):"
     assert lines[12] == "        self.name = name"
     assert lines[13] == "        self.breed = breed"
     assert lines[14] == "        self.favorite_toy = favorite_toy"
@@ -248,8 +245,8 @@ def test_replace_signatures_with_two_same_named_functions_second_function():
             "None",
             7,
             7,
+            instance=1,
         ),
-        function_instance=1,
     )
 
     lines = result.splitlines()
@@ -264,10 +261,7 @@ def test_replace_signatures_with_two_same_named_functions_second_function():
     assert lines[8] == "        self.breed = breed"
     assert lines[9] == ""
     assert lines[10] == "class Cat:"
-    assert (
-        lines[11]
-        == "    def __init__(self, name, breed, favorite_toy):"
-    )
+    assert lines[11] == "    def __init__(self, name, breed, favorite_toy):"
     assert lines[12] == "        self.name = name"
     assert lines[13] == "        self.breed = breed"
     assert lines[14] == "        self.favorite_toy = favorite_toy"
@@ -285,10 +279,10 @@ def test_replace_signatures_with_two_same_named_functions_third_function():
                 FunctionArg("favorite_toy"),
             ],
             "None",
-            12,
-            12,
+            None,
+            None,
+            instance=2,
         ),
-        function_instance=2,
     )
 
     lines = result.splitlines()

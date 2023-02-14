@@ -8,9 +8,7 @@ def get_signature_end_index(function_def: ast.FunctionDef) -> int:
     return function_def.body[0].lineno - 2
 
 
-def replace_function_signature(
-    code: str, function_info: FunctionInfo, *, function_instance=None
-) -> str:
+def replace_function_signature(code: str, function_info: FunctionInfo) -> str:
     """Replace the signature of a function in a given code string.
 
     Args:
@@ -30,10 +28,9 @@ def replace_function_signature(
             if node.name != function_info.name:
                 continue
 
-            if function_instance is not None:
-                if function_instance != instance:
-                    instance += 1
-                    continue
+            if function_info.instance != instance:
+                instance += 1
+                continue
 
             function_line_number = node.lineno
             spaces = " " * node.col_offset

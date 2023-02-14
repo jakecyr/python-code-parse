@@ -45,9 +45,7 @@ def test_get_all_and_replace_second_init_method():
         instance=cat_init.instance,
     )
 
-    updated_code = replace_function_signature(
-        class_string, new_function_info, function_instance=2
-    )
+    updated_code = replace_function_signature(class_string, new_function_info)
     lines = updated_code.splitlines()
 
     assert lines[1] == "class Person:"
