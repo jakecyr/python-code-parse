@@ -7,7 +7,7 @@ name = "python_code_parse"
 authors = [
     {name = "Jake Cyr", email = "cyrjake@gmail.com"},
 ]
-version = "0.0.10"
+version = "0.0.11"
 description = "Parse code to get information about functions, etc."
 readme = "README.md"
 requires-python = ">=3.7"

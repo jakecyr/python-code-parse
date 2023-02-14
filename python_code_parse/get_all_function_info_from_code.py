@@ -12,12 +12,19 @@ def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
     """Get a list of functions found in a code string."""
 
     functions: List[FunctionInfo] = []
+    names_seen = dict()
     tree: ast.Module = ast.parse(code)
 
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
             args: List[FunctionArg] = []
             defaults = node.args.defaults
+            function_name = node.name
+
+            if names_seen.get(function_name):
+                names_seen[function_name] += 1
+            else:
+                names_seen[function_name] = 1
 
             while len(defaults) < len(node.args.args):
                 defaults.insert(0, None)
@@ -53,13 +60,14 @@ def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
 
             functions.append(
                 FunctionInfo(
-                    name=node.name,
+                    name=function_name,
                     args=args,
                     return_type=ast.unparse(node.returns).strip()
                     if node.returns
                     else "",
                     line=node.lineno,
                     signature_end_line_index=get_signature_end_index(node),
+                    instance=names_seen.get(function_name) - 1,
                 )
             )
     return functions

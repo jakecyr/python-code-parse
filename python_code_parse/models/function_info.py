@@ -11,3 +11,4 @@ class FunctionInfo(NamedTuple):
     return_type: str
     line: int
     signature_end_line_index: int
+    instance: int = 0

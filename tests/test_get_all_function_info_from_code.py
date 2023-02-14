@@ -95,7 +95,6 @@ def test_returns_expected_info_with_default_value_after_first_argument():
         multi_long_function
     )
 
-    print(result)
     assert len(result) == 1
     assert result[0].args[0].name == "a"
     assert result[0].args[0].default == None
@@ -103,3 +102,32 @@ def test_returns_expected_info_with_default_value_after_first_argument():
     assert result[0].args[1].default == "1"
     assert result[0].args[2].name == "c"
     assert result[0].args[2].default == "3"
+
+
+class_string = """
+class Person:
+    def __init__(self, name):
+        self.name = name
+
+class Dog:
+    def __init__(self, name, breed):
+        self.name = name
+        self.breed = breed
+"""
+
+
+def test_returns_expected_info_with_two_same_named_functions():
+    result: list[FunctionInfo] = get_all_function_info_from_code(class_string)
+
+    assert len(result) == 2
+
+    assert len(result[0].args) == 2
+    assert result[0].instance == 0
+    assert result[0].args[0].name == "self"
+    assert result[0].args[1].name == "name"
+
+    assert len(result[1].args) == 3
+    assert result[1].instance == 1
+    assert result[1].args[0].name == "self"
+    assert result[1].args[1].name == "name"
+    assert result[1].args[2].name == "breed"

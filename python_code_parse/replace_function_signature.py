@@ -8,15 +8,32 @@ def get_signature_end_index(function_def: ast.FunctionDef) -> int:
     return function_def.body[0].lineno - 2
 
 
-def replace_function_signature(code: str, function_info: FunctionInfo) -> str:
-    """Replace the signature of a function in a given code string."""
+def replace_function_signature(
+    code: str, function_info: FunctionInfo, *, function_instance=None
+) -> str:
+    """Replace the signature of a function in a given code string.
 
+    Args:
+        code: the code to update
+        function_info: the function_info with the updates
+        function_instance: if there is more than one function with the
+            same name, which instance to update? Indexed at 0
+
+    Returns:
+        the updated code
+    """
     tree: ast.Module = ast.parse(code)
+    instance = 0
 
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
             if node.name != function_info.name:
                 continue
+
+            if function_instance is not None:
+                if function_instance != instance:
+                    instance += 1
+                    continue
 
             function_line_number = node.lineno
             spaces = " " * node.col_offset
