@@ -1,5 +1,6 @@
 import ast
-from typing import List
+from typing import List, Optional
+from python_code_parse.enums.special_arg import SpecialArg
 
 from python_code_parse.exceptions import FunctionNotFoundException
 from python_code_parse.models.function_arg import FunctionArg
@@ -7,53 +8,74 @@ from python_code_parse.models.function_info import FunctionInfo
 from python_code_parse.replace_function_signature import (
     get_signature_end_index,
 )
+from python_code_parse.utils.get_function_arg_from_ast_arg import (
+    get_function_arg_from_ast_arg,
+)
 
 
-def get_function_info_by_name(code: str, function_name: str) -> FunctionInfo:
-    """Get information about a function in a given code string."""
+def get_function_info_by_name(
+    code: str, function_name: str, instance: Optional[int] = 0
+) -> List[FunctionInfo]:
+    """Get info about a function by name."""
 
+    names_seen = dict()
     tree: ast.Module = ast.parse(code)
 
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
-            if node.name != function_name:
+            if function_name != node.name:
+                continue
+
+            current_function_instance = names_seen.get(function_name, 0)
+
+            if instance and current_function_instance != instance:
+                names_seen[function_name] = current_function_instance + 1
                 continue
 
             args: List[FunctionArg] = []
-            for arg in node.args.args:
-                arg_str = arg.arg
-                if arg.annotation:
-                    arg_str += ": " + ast.unparse(arg.annotation).strip()
-                    args.append(
-                        FunctionArg(
-                            name=arg.arg,
-                            annotation=ast.unparse(arg.annotation).strip(),
-                        )
+            defaults: list[ast.expr] = node.args.defaults
+
+            while len(defaults) < len(node.args.args):
+                defaults.insert(0, None)
+
+            for i, arg in enumerate(node.args.args):
+                args.append(get_function_arg_from_ast_arg(arg, defaults[i]))
+
+            # add *args if exists
+            if node.args.vararg:
+                args.append(
+                    get_function_arg_from_ast_arg(
+                        node.args.vararg, None, SpecialArg.vararg
                     )
-                else:
-                    args.append(FunctionArg(name=arg.arg, annotation=""))
+                )
+
+            # add *kwargs if exists
+            if node.args.kwarg:
+                args.append(
+                    get_function_arg_from_ast_arg(
+                        node.args.kwarg, None, SpecialArg.kwarg
+                    )
+                )
+
+            # add kwonlyargs if exist
+            for arg in node.args.kwonlyargs:
+                args.append(
+                    get_function_arg_from_ast_arg(
+                        arg, None, SpecialArg.kwonlyargs
+                    )
+                )
 
             return FunctionInfo(
-                name=node.name,
+                name=function_name,
                 args=args,
                 return_type=ast.unparse(node.returns).strip()
                 if node.returns
                 else "",
                 line=node.lineno,
                 signature_end_line_index=get_signature_end_index(node),
+                instance=current_function_instance,
             )
 
-    raise FunctionNotFoundException(function_name)
-
-
-def get_function_line_number(code: str, function_name: str) -> int:
-    """Get the line number of a function in a given code string."""
-    tree: ast.Module = ast.parse(code)
-
-    for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef):
-            if node.name != function_name:
-                continue
-            return node.lineno
-
-    raise FunctionNotFoundException(function_name)
+    raise FunctionNotFoundException(
+        f"Function not found by name '{function_name} and instance {instance}"
+    )

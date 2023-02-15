@@ -1,5 +1,5 @@
 import ast
-from typing import Any, List, Optional
+from typing import List
 from python_code_parse.enums.special_arg import SpecialArg
 
 from python_code_parse.models.function_arg import FunctionArg
@@ -7,24 +7,9 @@ from python_code_parse.models.function_info import FunctionInfo
 from python_code_parse.replace_function_signature import (
     get_signature_end_index,
 )
-
-
-def get_function_arg_from_ast_arg(
-    arg, default: Optional[Any] = None, special: SpecialArg = None
-):
-    arg_default = None
-
-    if default is not None:
-        arg_default = ast.unparse(default).strip()
-
-    return FunctionArg(
-        name=arg.arg,
-        annotation=ast.unparse(arg.annotation).strip()
-        if arg.annotation
-        else "",
-        default=arg_default,
-        special=special,
-    )
+from python_code_parse.utils.get_function_arg_from_ast_arg import (
+    get_function_arg_from_ast_arg,
+)
 
 
 def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:

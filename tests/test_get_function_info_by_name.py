@@ -4,7 +4,6 @@ from python_code_parse import (
     FunctionInfo,
     FunctionNotFoundException,
     get_function_info_by_name,
-    get_function_line_number,
 )
 
 
@@ -30,6 +29,7 @@ def test_get_function_info_by_name_returns_expected_info_with_one_function():
     assert result.name == "test"
     assert result.line == 1
     assert result.return_type == "float"
+    assert result.instance == 0
     assert len(result.args) == 2
     assert result.args[0].name == "a"
     assert result.args[0].annotation == "int"
@@ -40,30 +40,23 @@ def test_get_function_info_by_name_returns_expected_info_with_one_function():
 def test_get_function_info_by_name_returns_expected_info_with_two_functions():
     multi_long_function = """def test(a: int, b: float) -> float:\n\tpass"""
     multi_long_function += (
-        """\n\ndef test2(a: int, b: float) -> float:\n\tpass"""
+        """\n\ndef test(a: int, b: float, c: int) -> float:\n\tpass"""
     )
 
-    result = get_function_info_by_name(multi_long_function, "test")
+    result = get_function_info_by_name(multi_long_function, "test", 1)
     assert isinstance(
         result,
         FunctionInfo,
     )
 
     assert result.name == "test"
-    assert result.line == 1
+    assert result.line == 4
     assert result.return_type == "float"
-    assert len(result.args) == 2
+    assert result.instance == 1
+    assert len(result.args) == 3
     assert result.args[0].name == "a"
     assert result.args[0].annotation == "int"
     assert result.args[1].name == "b"
     assert result.args[1].annotation == "float"
-
-
-def test_get_function_line_number_returns_the_correct_value():
-    multi_long_function = """def test(a: int, b: float) -> float:\n\tpass"""
-    multi_long_function += (
-        """\n\ndef test2(a: int, b: float) -> float:\n\tpass"""
-    )
-
-    assert get_function_line_number(multi_long_function, "test") == 1
-    assert get_function_line_number(multi_long_function, "test2") == 4
+    assert result.args[2].name == "c"
+    assert result.args[2].annotation == "int"
