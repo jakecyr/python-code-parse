@@ -1,4 +1,5 @@
 import ast
+from python_code_parse.enums.special_arg import SpecialArg
 
 from python_code_parse.exceptions import FunctionNotFoundException
 from python_code_parse.models.function_info import FunctionInfo
@@ -35,17 +36,45 @@ def replace_function_signature(code: str, function_info: FunctionInfo) -> str:
             function_line_number = node.lineno
             spaces = " " * node.col_offset
             new_signature = f"{spaces}def {function_info.name}("
+            added_kwonly_args = False
 
             for arg in function_info.args:
                 default_string = (
                     f" = {arg.default}" if arg.default is not None else ""
                 )
-                if arg.annotation != "" and arg.annotation is not None:
-                    new_signature += (
-                        f"{arg.name}: {arg.annotation}{default_string}, "
-                    )
-                else:
-                    new_signature += f"{arg.name}{default_string}, "
+
+                if not arg.special:
+                    if arg.annotation != "" and arg.annotation is not None:
+                        new_signature += (
+                            f"{arg.name}: {arg.annotation}{default_string}, "
+                        )
+                    else:
+                        new_signature += f"{arg.name}{default_string}, "
+                elif arg.special == SpecialArg.vararg:
+                    if arg.annotation != "" and arg.annotation is not None:
+                        new_signature += (
+                            f"*{arg.name}: {arg.annotation}{default_string}, "
+                        )
+                    else:
+                        new_signature += f"*{arg.name}{default_string}, "
+                elif arg.special == SpecialArg.kwarg:
+                    if arg.annotation != "" and arg.annotation is not None:
+                        new_signature += (
+                            f"**{arg.name}: {arg.annotation}{default_string}, "
+                        )
+                    else:
+                        new_signature += f"**{arg.name}{default_string}, "
+                elif arg.special == SpecialArg.kwonlyargs:
+                    if not added_kwonly_args:
+                        new_signature += "*, "
+                        added_kwonly_args = True
+
+                    if arg.annotation != "" and arg.annotation is not None:
+                        new_signature += (
+                            f"{arg.name}: {arg.annotation}{default_string}, "
+                        )
+                    else:
+                        new_signature += f"{arg.name}{default_string}, "
 
             if len(function_info.args) > 0:
                 new_signature = new_signature[:-2]

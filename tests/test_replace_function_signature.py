@@ -4,6 +4,7 @@ from python_code_parse import (
     FunctionInfo,
     replace_function_signature,
 )
+from python_code_parse.enums.special_arg import SpecialArg
 
 from python_code_parse.replace_function_signature import (
     get_signature_end_index,
@@ -304,3 +305,115 @@ def test_replace_signatures_with_two_same_named_functions_third_function():
     assert lines[12] == "        self.name = name"
     assert lines[13] == "        self.breed = breed"
     assert lines[14] == "        self.favorite_toy = favorite_toy"
+
+
+args_kwargs_function = """
+def log(message='', *args, **kwargs) -> None:
+    if kwargs.get("level"):
+        print(kwargs["level"])
+
+    print(message)
+"""
+
+
+def test_replace_signatures_with_args_and_kwargs():
+    result: list[FunctionInfo] = replace_function_signature(
+        args_kwargs_function,
+        FunctionInfo(
+            "log",
+            [
+                FunctionArg("message", "str", "''"),
+                FunctionArg("args", None, None, SpecialArg.vararg),
+                FunctionArg("kwargs", None, None, SpecialArg.kwarg),
+            ],
+            "None",
+            None,
+            None,
+            instance=0,
+        ),
+    )
+
+    lines = result.splitlines()
+
+    assert lines[1] == "def log(message: str = '', *args, **kwargs) -> None:"
+
+
+args_function = """
+def log(*args) -> None:
+    print(args)
+"""
+
+
+def test_replace_signatures_with_args():
+    result: list[FunctionInfo] = replace_function_signature(
+        args_function,
+        FunctionInfo(
+            "log",
+            [
+                FunctionArg("args", "Any", None, SpecialArg.vararg),
+            ],
+            "None",
+            None,
+            None,
+            instance=0,
+        ),
+    )
+
+    lines = result.splitlines()
+
+    assert lines[1] == "def log(*args: Any) -> None:"
+
+
+kwargs_function = """
+def log(**kwargs) -> None:
+    print(kwargs.get('message', 'No message found'))
+"""
+
+
+def test_replace_signatures_with_kwargs():
+    result: list[FunctionInfo] = replace_function_signature(
+        kwargs_function,
+        FunctionInfo(
+            "log",
+            [
+                FunctionArg("kwargs", "Any", None, SpecialArg.kwarg),
+            ],
+            "None",
+            None,
+            None,
+            instance=0,
+        ),
+    )
+
+    lines = result.splitlines()
+
+    assert lines[1] == "def log(**kwargs: Any) -> None:"
+    assert lines[2] == "    print(kwargs.get('message', 'No message found'))"
+
+
+kwonly_function = """
+def log(*, message:str, level = 'debug') -> None:
+    print(message)
+"""
+
+
+def test_replace_signatures_with_kwonly():
+    result: list[FunctionInfo] = replace_function_signature(
+        kwonly_function,
+        FunctionInfo(
+            "log",
+            [
+                FunctionArg("message", "str", None, SpecialArg.kwonlyargs),
+                FunctionArg("level", "", "'debug'", SpecialArg.kwonlyargs),
+            ],
+            "None",
+            None,
+            None,
+            instance=0,
+        ),
+    )
+
+    lines = result.splitlines()
+
+    assert lines[1] == "def log(*, message: str, level = 'debug') -> None:"
+    assert lines[2] == "    print(message)"
