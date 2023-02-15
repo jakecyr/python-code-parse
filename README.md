@@ -29,20 +29,28 @@ print(function_infos)
     name='sum',
     args=[
       FunctionArg(name='a', annotation='int'),
+      FunctionArg(name='b', annotation='', default = '1')
+    ],
+    return_type='None',
+    line=1
+  ),
+  FunctionInfo(
+    name='subtract',
+    args=[
+      FunctionArg(name='a', annotation=''),
       FunctionArg(name='b', annotation='')
-      ],
-      return_type='None',
-      line=1
-    ),
-    FunctionInfo(
-      name='subtract',
-      args=[
-        FunctionArg(name='a', annotation=''),
-        FunctionArg(name='b', annotation='')
-      ],
-      return_type='int',
-      line=4
-    )
+    ],
+    return_type='int',
+    line=5
+  ),
+  FunctionInfo(
+    name='log',
+    args=[
+      FunctionArg(name='message', annotation='str', special=SpecialArg.kwonlyargs),
+    ],
+    return_type='None',
+    line=9
+  )
 ]
 """
 ```
