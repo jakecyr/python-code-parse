@@ -1,6 +1,8 @@
 # Python Code Parser
 
-Parse Python code to extract information about functions, classes, methods, etc.
+Simple functions built on Python `ast` to parse Python code and extract information about functions, parameters, etc.
+
+Used for auto-type-hinting projects.
 
 ## Install with pip
 
@@ -8,7 +10,25 @@ Parse Python code to extract information about functions, classes, methods, etc.
 pip install python_code_parse
 ```
 
-## Usage
+## Functions
+
+### get_function_info_by_name
+
+Returns a [`FunctionInfo`](./python_code_parse/models/function_info.py) object containing information about a function and [it's parameters](./python_code_parse/models/function_arg.py) in a given code string.
+
+### get_all_function_info_from_code
+
+Returns a list of [`FunctionInfo`](./python_code_parse/models/function_info.py) objects, each containing information about a function and [it's parameters](./python_code_parse/models/function_arg.py) in a given code string.
+
+### replace_function_signature
+
+Replace a function declaration including the parameters (with annotations and default values) and the return type.
+
+### function_returns
+
+Returns a boolean value saying if a given function returns a value or `None`.
+
+## Example
 
 Below is the output of running the parser on the example `examples/basic_example.py`:
 
@@ -53,27 +73,4 @@ print(function_infos)
   )
 ]
 """
-```
-
-## Setup for Development
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -e .
-pip install -e .[dev]
-```
-
-## Upload to PyPi
-
-First you have to build the wheel file:
-
-```bash
-python3 -m pip wheel .
-```
-
-Then the wheel file can be uploaded to PyPi with:
-
-```bash
-twine upload --skip-existing python_code_parse-*.whl
 ```

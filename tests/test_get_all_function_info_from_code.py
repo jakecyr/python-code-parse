@@ -161,6 +161,7 @@ def test_get_all_function_info_includes_args_and_kwargs():
 function_with_required_kwargs = """
 def log(*, message:str):
     print(f"LOG: {message}")
+    return "hello"
 """
 
 

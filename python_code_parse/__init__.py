@@ -20,3 +20,6 @@ from python_code_parse.replace_function_signature import (
 from python_code_parse.get_function_indentation_str import (
     get_function_indentation_str,
 )
+from python_code_parse.function_returns import (
+    function_returns,
+)
