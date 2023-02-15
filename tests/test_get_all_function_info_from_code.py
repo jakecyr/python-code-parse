@@ -1,4 +1,5 @@
 from python_code_parse import get_all_function_info_from_code
+from python_code_parse.enums.special_arg import SpecialArg
 from python_code_parse.models.function_info import FunctionInfo
 
 
@@ -131,3 +132,41 @@ def test_returns_expected_info_with_two_same_named_functions():
     assert result[1].args[0].name == "self"
     assert result[1].args[1].name == "name"
     assert result[1].args[2].name == "breed"
+
+
+function_with_args_and_kwargs = """
+def log(message: str, *args, **kwargs):
+    print(f"LOG: {message}")
+"""
+
+
+def test_get_all_function_info_includes_args_and_kwargs():
+    function_infos = get_all_function_info_from_code(
+        function_with_args_and_kwargs
+    )
+
+    assert len(function_infos) == 1
+    assert len(function_infos[0].args) == 3
+    assert function_infos[0].args[0].name == "message"
+    assert function_infos[0].args[0].annotation == "str"
+    assert function_infos[0].args[1].name == "args"
+    assert function_infos[0].args[1].special == SpecialArg.vararg
+    assert function_infos[0].args[2].name == "kwargs"
+    assert function_infos[0].args[2].special == SpecialArg.kwarg
+
+
+function_with_required_kwargs = """
+def log(*, message:str):
+    print(f"LOG: {message}")
+"""
+
+
+def test_get_all_function_info_includes_forced_kwargs():
+    function_infos = get_all_function_info_from_code(
+        function_with_required_kwargs
+    )
+
+    assert len(function_infos) == 1
+    assert len(function_infos[0].args) == 1
+    assert function_infos[0].args[0].name == "message"
+    assert function_infos[0].args[0].annotation == "str"

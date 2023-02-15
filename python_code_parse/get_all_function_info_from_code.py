@@ -1,11 +1,30 @@
 import ast
-from typing import List
+from typing import Any, List, Optional
+from python_code_parse.enums.special_arg import SpecialArg
 
 from python_code_parse.models.function_arg import FunctionArg
 from python_code_parse.models.function_info import FunctionInfo
 from python_code_parse.replace_function_signature import (
     get_signature_end_index,
 )
+
+
+def get_function_arg_from_ast_arg(
+    arg, default: Optional[Any] = None, special: SpecialArg = None
+):
+    arg_default = None
+
+    if default is not None:
+        arg_default = ast.unparse(default).strip()
+
+    return FunctionArg(
+        name=arg.arg,
+        annotation=ast.unparse(arg.annotation).strip()
+        if arg.annotation
+        else "",
+        default=arg_default,
+        special=special,
+    )
 
 
 def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
@@ -18,8 +37,8 @@ def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
             args: List[FunctionArg] = []
-            defaults = node.args.defaults
-            function_name = node.name
+            defaults: list[ast.expr] = node.args.defaults
+            function_name: str = node.name
 
             if names_seen.get(function_name):
                 names_seen[function_name] += 1
@@ -30,33 +49,31 @@ def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
                 defaults.insert(0, None)
 
             for i, arg in enumerate(node.args.args):
-                arg_str = arg.arg
+                args.append(get_function_arg_from_ast_arg(arg, defaults[i]))
 
-                if arg.annotation:
-                    arg_str += ": " + ast.unparse(arg.annotation).strip()
-                    arg_default = None
-
-                    if defaults[i] is not None:
-                        arg_default = ast.unparse(defaults[i]).strip()
-
-                    args.append(
-                        FunctionArg(
-                            name=arg.arg,
-                            annotation=ast.unparse(arg.annotation).strip(),
-                            default=arg_default,
-                        )
+            # add *args if exists
+            if node.args.vararg:
+                args.append(
+                    get_function_arg_from_ast_arg(
+                        node.args.vararg, None, SpecialArg.vararg
                     )
-                else:
-                    arg_default = None
+                )
 
-                    if defaults[i] is not None:
-                        arg_default = ast.unparse(defaults[i]).strip()
-
-                    args.append(
-                        FunctionArg(
-                            name=arg.arg, annotation="", default=arg_default
-                        )
+            # add *kwargs if exists
+            if node.args.kwarg:
+                args.append(
+                    get_function_arg_from_ast_arg(
+                        node.args.kwarg, None, SpecialArg.kwarg
                     )
+                )
+
+            # add kwonlyargs if exist
+            for arg in node.args.kwonlyargs:
+                args.append(
+                    get_function_arg_from_ast_arg(
+                        arg, None, SpecialArg.kwonlyargs
+                    )
+                )
 
             functions.append(
                 FunctionInfo(
@@ -70,4 +87,5 @@ def get_all_function_info_from_code(code: str) -> List[FunctionInfo]:
                     instance=names_seen.get(function_name) - 1,
                 )
             )
+
     return functions
