@@ -1,6 +1,6 @@
 # Python Code Parser
 
-![pipeline status](https://github.com/jakecyr/python-code-parse/actions/workflows/python-app.yml/badge.svg)
+[![pipeline status](https://github.com/jakecyr/python-code-parse/actions/workflows/python-app.yml/badge.svg)](https://github.com/jakecyr/python-code-parse/actions)
 
 Simple functions built on Python `ast` to parse Python code and extract information about functions, parameters, etc.
 
