@@ -38,4 +38,10 @@ jobs:
       run: |
         pip install . coverage
         coverage run --source python_code_parse -m pytest
-        coverage report 
+        coverage report --fail-under=95 --show-missing
+        coverage xml
+      with:
+        filename: coverage.xml
+        badge: true
+        format: 'markdown'
+        output: 'both'
